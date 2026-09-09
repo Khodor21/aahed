@@ -16,28 +16,24 @@ export default function AuthWelcomePage() {
       </div>
 
       {/* Middle Section: Welcome Text */}
-      <div className="w-full max-w-md px-4 flex flex-col items-center text-center mt-auto mb-auto">
+      <div className="w-full max-w-md px-4 flex flex-col items-start text-right mt-auto mb-auto">
         <h1
-          className="text-xl font-light text-black leading-relaxed"
+          className="text-2xl font-light text-black leading-relaxed"
           style={{ fontFeatureSettings: '"ss01" on, "calt" on' }}
         >
           السلام عليكم ورحمة الله
         </h1>
-        <h2 
-                  style={{ fontFeatureSettings: '"ss01" on, "calt" on' }}
-
-        className="text-3xl font-serif text-main leading-relaxed">
-أهـــلاً وسهـلاً بك.        </h2>
+        <h2 className="text-2xl font-serif text-main leading-relaxed">
+          أهـلاً وسهلاً بك.
+        </h2>
       </div>
 
       {/* Bottom Section: Buttons & Forgot Password */}
       <div className="w-full max-w-sm px-4 flex flex-col space-y-3 pb-8 mx-auto">
-        <button
-        
-        className="w-full text-sm bg-black text-white py-2 px-4 rounded-md font-normal text-base hover:opacity-95 transition-opacity">
+        <button className="w-full bg-black text-white py-2 px-4 rounded-xl font-normal text-base hover:opacity-95 transition-opacity">
           سجّل دخول
         </button>
-        <button className="w-full bg-black text-sm text-white py-2 px-4 rounded-md  font-normal text-base hover:opacity-95 transition-opacity">
+        <button className="w-full bg-black text-white py-4 px-4 rounded-xl font-normal text-base hover:opacity-95 transition-opacity">
           أنشئ حساب
         </button>
         <div className="pt-2 text-center">
