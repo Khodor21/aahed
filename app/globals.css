@@ -1,42 +1,42 @@
 @import "tailwindcss";
 
 @theme {
-  --color-main: #E4543C;
-  --color-black: #2B2B2B;
-  --color-white: #FFFCF7;
-  --color-lightgrey: #EAEAEA;
+  --color-main: #e4543c;
+  --color-black: #2b2b2b;
+  --color-white: #fffcf7;
+  --color-lightgrey: #eaeaea;
 
-  --font-sans: 'Thmanyah Sans', sans-serif;
-  --font-serif: 'Thmanyah Serif Display', serif;
+  --font-sans: "Thmanyah Sans", sans-serif;
+  --font-serif: "Thmanyah Serif Display", serif;
 }
 
 @font-face {
-  font-family: 'Thmanyah Sans';
-  src: url('/fonts/ThmanyahSans-Light.otf') format('opentype');
+  font-family: "Thmanyah Sans";
+  src: url("/fonts/ThmanyahSans-Light.otf") format("opentype");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Thmanyah Sans';
-  src: url('/fonts/ThmanyahSans-Regular.otf') format('opentype');
+  font-family: "Thmanyah Sans";
+  src: url("/fonts/ThmanyahSans-Regular.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Thmanyah Sans';
-  src: url('/fonts/ThmanyahSans-Medium.otf') format('opentype');
+  font-family: "Thmanyah Sans";
+  src: url("/fonts/ThmanyahSans-Medium.otf") format("opentype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Thmanyah Serif Display';
-  src: url('/fonts/ThmanyahSerifDisplay-Medium.otf') format('opentype');
+  font-family: "Thmanyah Serif Display";
+  src: url("/fonts/ThmanyahSerifDisplay-Medium.otf") format("opentype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -44,10 +44,22 @@
 
 @layer base {
   body {
-    background-color: #FFFCF7;
-    color: #2B2B2B;
-    font-family: 'Thmanyah Sans', sans-serif;
+    background-color: #fffcf7;
+    color: #2b2b2b;
+    font-family: "Thmanyah Sans", sans-serif;
     padding-left: 16px;
     padding-right: 16px;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply w-full text-sm bg-black text-white py-1 rounded-md font-normal hover:opacity-95 transition-opacity text-center block;
+  }
+  .btn-secondary {
+    @apply w-full text-sm bg-white text-black py-1 rounded-md font-normal border border-lightgrey hover:opacity-95 transition-opacity text-center block;
+  }
+  .input-field {
+    @apply w-full bg-lightgrey rounded-md px-4 py-1 text-right text-black font-light text-sm outline-none border-none;
   }
 }
