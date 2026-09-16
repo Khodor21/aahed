@@ -1,5 +1,6 @@
 import type { MonthlyReviewSummary, Student } from "@/lib/types/student";
 import { PAGES_PER_JUZ } from "@/lib/juz";
+import { buildDailyPlan, calculateCompletedPages, getDaysInMonth } from "@/lib/dailyPlan";
 
 /**
  * In-memory data store standing in for a real database.
@@ -18,7 +19,8 @@ const seedStudent: Student = {
     monthLabel: "سبتمبر 2026",
     selectedJuz: [5],
     targetPages: 20,
-    completedPages: 12,
+    completedPages: 8,
+    completedDays: [2, 3, 5, 6, 8, 9, 11, 12],
     status: "on_track",
   },
   streakDays: 5,
@@ -35,6 +37,7 @@ const seedStudent: Student = {
       selectedJuz: [4],
       targetPages: 20,
       completedPages: 20,
+      completedDays: [],
       status: "completed",
       evaluation: {
         score: 9,
@@ -49,6 +52,7 @@ const seedStudent: Student = {
       selectedJuz: [3],
       targetPages: 20,
       completedPages: 20,
+      completedDays: [],
       status: "completed",
       evaluation: {
         score: 8,
@@ -63,6 +67,7 @@ const seedStudent: Student = {
       selectedJuz: [2],
       targetPages: 20,
       completedPages: 14,
+      completedDays: [],
       status: "behind",
       evaluation: {
         score: 7,
@@ -91,6 +96,7 @@ function createEmptyMonth(): MonthlyReviewSummary {
     selectedJuz: [],
     targetPages: 0,
     completedPages: 0,
+    completedDays: [],
     status: "not_started",
   };
 }
@@ -112,7 +118,47 @@ export async function updateCurrentMonth(
     selectedJuz,
     targetPages,
     completedPages: 0,
+    completedDays: [],
     status: targetPages === 0 ? "not_started" : "on_track",
+  };
+
+  store.set(studentId, { ...student, currentMonth: updated });
+  return updated;
+}
+
+function parseYearMonth(id: string): [number, number] {
+  const [year, month] = id.split("-").map(Number);
+  return [year, month];
+}
+
+export async function toggleDayCompletion(
+  studentId: string,
+  day: number,
+  completed: boolean
+): Promise<MonthlyReviewSummary | undefined> {
+  const student = store.get(studentId);
+  if (!student || !student.currentMonth) return undefined;
+
+  const current = student.currentMonth;
+  const completedDays = completed
+    ? Array.from(new Set([...current.completedDays, day]))
+    : current.completedDays.filter((d) => d !== day);
+
+  const [year, month] = parseYearMonth(current.id);
+  const daysInMonth = getDaysInMonth(year, month);
+  const plan = buildDailyPlan(current.targetPages, daysInMonth);
+  const completedPages = calculateCompletedPages(plan, completedDays);
+
+  const updated: MonthlyReviewSummary = {
+    ...current,
+    completedDays,
+    completedPages,
+    status:
+      current.targetPages === 0
+        ? "not_started"
+        : completedPages >= current.targetPages
+          ? "completed"
+          : "on_track",
   };
 
   store.set(studentId, { ...student, currentMonth: updated });

@@ -13,6 +13,7 @@ export interface MonthlyReviewSummary {
   selectedJuz: number[];
   targetPages: number;
   completedPages: number;
+  completedDays: number[];
   status: ReviewStatus;
   evaluation?: TeacherEvaluation;
 }

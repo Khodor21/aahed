@@ -13,7 +13,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { href: "/home", label: "الرئيسية", icon: FiHome },
-  { href: "/monthly-review", label: "الخطة اليومية", icon: FiCalendar },
+  { href: "/monthly-review", label: "الخطة الشهرية", icon: FiCalendar },
   { href: "/events", label: "الفعاليات", icon: FiMapPin },
   { href: "/profile", label: "حسابي", icon: FiUser },
 ];

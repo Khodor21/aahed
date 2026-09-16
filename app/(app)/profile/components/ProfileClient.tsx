@@ -109,7 +109,7 @@ export default function ProfileClient({
               href="/monthly-review"
               className="flex items-center gap-1 text-xs font-normal text-main hover:underline border-t border-lightgrey w-full justify-center pt-3 mt-1"
             >
-              عرض خطة المراجعة اليومية
+              عرض الخطة الشهرية
               <FiArrowLeft size={12} />
             </Link>
           </div>
