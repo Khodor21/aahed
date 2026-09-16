@@ -40,9 +40,12 @@ export default function ProfileClient({
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center py-10" dir="rtl">
+    <main
+      className="min-h-screen flex flex-col items-center pt-10 pb-24"
+      dir="rtl"
+    >
       <div className="w-full max-w-sm px-4 mx-auto flex flex-col space-y-6">
-        <TopBar title="الملف الشخصي" backHref="/" />
+        <TopBar title="الملف الشخصي" />
 
         {/* Identity header */}
         <div className="w-full flex flex-col items-center text-center space-y-2">
