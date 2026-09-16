@@ -1,1 +1,2 @@
 @AGENTS.md
+@PRODUCT_CONTEXT.md
