@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { FiCheckCircle } from "react-icons/fi";
 import TopBar from "@/components/TopBar";
 import { buildDailyPlan, getDaysInMonth } from "@/lib/dailyPlan";
 import { formatSelectedJuzLabel } from "@/lib/juz";
 import type { MonthlyReviewSummary } from "@/lib/types/student";
 import { toggleDayCompletion } from "../api";
 import DayCard from "./DayCard";
+
+const TOAST_DURATION_MS = 3000;
 
 interface MonthlyPlanClientProps {
   studentId: string;
@@ -21,6 +24,14 @@ export default function MonthlyPlanClient({
 }: MonthlyPlanClientProps) {
   const [currentMonth, setCurrentMonth] = useState(initialCurrentMonth);
   const [pendingDay, setPendingDay] = useState<number | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    };
+  }, []);
 
   const [year, month] = currentMonth.id.split("-").map(Number);
   const daysInMonth = getDaysInMonth(year, month);
@@ -42,6 +53,12 @@ export default function MonthlyPlanClient({
     try {
       const updated = await toggleDayCompletion(studentId, day, completed);
       setCurrentMonth(updated);
+
+      if (completed) {
+        if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+        setShowToast(true);
+        toastTimeoutRef.current = setTimeout(() => setShowToast(false), TOAST_DURATION_MS);
+      }
     } catch {
       // request failed — leave the card in its previous state
     } finally {
@@ -91,6 +108,7 @@ export default function MonthlyPlanClient({
                 pages={d.pages}
                 startPage={d.startPage}
                 endPage={d.endPage}
+                type={d.type}
                 isLocked={isLocked}
                 isToday={isToday}
                 isCompleted={isCompleted}
@@ -99,6 +117,21 @@ export default function MonthlyPlanClient({
               />
             );
           })}
+        </div>
+      </div>
+
+      <div
+        role="status"
+        aria-live="polite"
+        className={`fixed inset-x-0 bottom-20 z-30 flex justify-center px-4 transition-all duration-300 ease-out ${
+          showToast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"
+        }`}
+      >
+        <div className="w-full max-w-sm flex items-center gap-2 bg-black text-white rounded-md shadow-lg px-4 py-3">
+          <FiCheckCircle size={18} className="text-main shrink-0" />
+          <span className="text-sm font-normal">
+            أتممت هدف اليوم بنجاح، استمر يا بطل! 💪
+          </span>
         </div>
       </div>
     </main>

@@ -20,7 +20,7 @@ const seedStudent: Student = {
     selectedJuz: [5],
     targetPages: 20,
     completedPages: 8,
-    completedDays: [2, 3, 5, 6, 8, 9, 11, 12],
+    completedDays: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     status: "on_track",
   },
   streakDays: 5,

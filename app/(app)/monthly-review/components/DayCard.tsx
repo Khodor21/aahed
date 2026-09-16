@@ -1,4 +1,6 @@
-import { FiCheckCircle, FiCircle, FiLock } from "react-icons/fi";
+import type { KeyboardEvent } from "react";
+import { FiCheckCircle, FiCircle, FiLock, FiRepeat } from "react-icons/fi";
+import type { DayPlanType } from "@/lib/dailyPlan";
 
 interface DayCardProps {
   day: number;
@@ -6,6 +8,7 @@ interface DayCardProps {
   pages: number;
   startPage: number | null;
   endPage: number | null;
+  type: DayPlanType;
   isLocked: boolean;
   isToday: boolean;
   isCompleted: boolean;
@@ -19,37 +22,66 @@ export default function DayCard({
   pages,
   startPage,
   endPage,
+  type,
   isLocked,
   isToday,
   isCompleted,
   disabled = false,
   onToggle,
 }: DayCardProps) {
-  const isRestDay = pages === 0;
+  const isReview = type === "review";
+  const isInteractive = !isLocked && !disabled;
 
-  const rangeLabel = isRestDay
-    ? "يوم راحة"
+  const rangeLabel = isReview
+    ? pages === 1
+      ? "مراجعة الصفحة 1"
+      : `مراجعة الصفحات 1-${endPage}`
     : pages === 1
       ? `صفحة ${startPage}`
       : `صفحات ${startPage}-${endPage}`;
 
   const badgeClasses = isToday
     ? "bg-main text-white"
-    : isRestDay
-      ? "bg-white border border-lightgrey text-black"
+    : isReview
+      ? "bg-black text-white"
       : "bg-lightgrey text-black";
 
-  const cardClasses = isRestDay
-    ? "border-lightgrey bg-lightgrey/20"
+  const cardClasses = isLocked
+    ? "border-lightgrey bg-white opacity-50 cursor-not-allowed"
     : isToday
-      ? "border-main bg-main/5"
-      : isLocked
-        ? "border-lightgrey bg-white opacity-50"
-        : "border-lightgrey bg-white";
+      ? "border-main bg-main/5 cursor-pointer active:scale-[0.98]"
+      : "border-lightgrey bg-white cursor-pointer hover:border-main/30 active:scale-[0.98]";
+
+  const handleClick = () => {
+    if (!isInteractive) return;
+    onToggle();
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!isInteractive) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onToggle();
+    }
+  };
 
   return (
     <div
-      className={`flex items-center justify-between w-full border rounded-md p-3 transition-colors duration-200 ${cardClasses}`}
+      role={isInteractive ? "button" : undefined}
+      tabIndex={isInteractive ? 0 : undefined}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      aria-label={
+        isInteractive
+          ? isCompleted
+            ? "إلغاء إتمام اليوم"
+            : "إتمام اليوم"
+          : "يوم مقفل، لم يحن موعده بعد"
+      }
+      aria-disabled={disabled || isLocked || undefined}
+      className={`flex items-center justify-between w-full border rounded-md p-3 transition-all duration-200 ${cardClasses} ${
+        isCompleted ? "animate-card-complete" : ""
+      } ${disabled ? "opacity-60 pointer-events-none" : ""}`}
     >
       <div className="flex items-center gap-3">
         <span
@@ -58,27 +90,34 @@ export default function DayCard({
           {day}
         </span>
         <div className="flex flex-col items-start">
-          <span className="text-sm font-normal text-black">{rangeLabel}</span>
+          <span className="flex items-center gap-1.5 text-sm font-normal text-black">
+            {isReview ? <FiRepeat size={13} className="shrink-0" /> : null}
+            {rangeLabel}
+          </span>
           <span className="text-xs font-light text-black">{weekdayLabel}</span>
         </div>
       </div>
 
-      {isRestDay ? null : isLocked ? (
-        <FiLock size={18} className="text-lightgrey" />
+      {isLocked ? (
+        <span
+          aria-hidden="true"
+          className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full bg-lightgrey/50 text-lightgrey"
+        >
+          <FiLock size={16} />
+        </span>
       ) : (
-        <button
-          type="button"
-          onClick={onToggle}
-          disabled={disabled}
-          aria-label={isCompleted ? "إلغاء إتمام اليوم" : "إتمام اليوم"}
-          className="text-lightgrey hover:text-main transition-colors duration-200 disabled:opacity-50"
+        <span
+          aria-hidden="true"
+          className={`w-9 h-9 shrink-0 flex items-center justify-center rounded-full transition-colors duration-200 ${
+            isCompleted ? "text-main" : "text-lightgrey"
+          }`}
         >
           {isCompleted ? (
-            <FiCheckCircle size={22} className="text-main" />
+            <FiCheckCircle key="check" size={22} className="animate-check-pop" />
           ) : (
             <FiCircle size={22} />
           )}
-        </button>
+        </span>
       )}
     </div>
   );
