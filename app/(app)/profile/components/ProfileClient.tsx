@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FiArrowLeft, FiBookOpen, FiEdit2, FiTarget } from "react-icons/fi";
+import { useRouter } from "next/navigation";
+import { FiArrowLeft, FiBookOpen, FiEdit2, FiLogOut, FiTarget } from "react-icons/fi";
 import type { ReviewStatus, Student } from "@/lib/types/student";
-import { updateMonthlyGoal } from "../api";
+import { updateMonthlyGoal, logout } from "../api";
 import { formatSelectedJuzLabel } from "@/lib/juz";
 import TopBar from "@/components/TopBar";
 import ProgressRing from "./ProgressRing";
@@ -12,6 +13,7 @@ import StatRow from "./StatRow";
 import AchievementBadge from "./AchievementBadge";
 import MonthlyHistoryItem from "./MonthlyHistoryItem";
 import GoalDialog from "./GoalDialog";
+import LogoutDialog from "./LogoutDialog";
 
 const statusLabels: Record<ReviewStatus, string> = {
   on_track: "على المسار",
@@ -27,8 +29,10 @@ interface ProfileClientProps {
 export default function ProfileClient({
   student: initialStudent,
 }: ProfileClientProps) {
+  const router = useRouter();
   const [student, setStudent] = useState(initialStudent);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
   const { currentMonth } = student;
   const hasHistory = student.history.length > 0;
@@ -37,6 +41,11 @@ export default function ProfileClient({
     const updated = await updateMonthlyGoal(student.id, selectedJuz);
     setStudent((prev) => ({ ...prev, currentMonth: updated }));
     setDialogOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
   };
 
   return (
@@ -185,6 +194,15 @@ export default function ProfileClient({
             </span>
           </div>
         )}
+
+        <button
+          type="button"
+          onClick={() => setLogoutDialogOpen(true)}
+          className="btn-secondary flex items-center justify-center gap-2"
+        >
+          <FiLogOut size={16} />
+          تسجيل الخروج
+        </button>
       </div>
 
       {dialogOpen && (
@@ -195,6 +213,13 @@ export default function ProfileClient({
           avatarInitials={student.avatarInitials}
           initialSelectedJuz={currentMonth?.selectedJuz ?? []}
           onSave={handleSaveGoal}
+        />
+      )}
+
+      {logoutDialogOpen && (
+        <LogoutDialog
+          onClose={() => setLogoutDialogOpen(false)}
+          onConfirm={handleLogout}
         />
       )}
     </main>
