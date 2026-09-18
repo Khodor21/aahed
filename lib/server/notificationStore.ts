@@ -26,7 +26,7 @@ const seedNotifications: AppNotification[] = [
     body: "حُدد موعد التسميع الشهري يوم الجمعة بعد صلاة العصر في مقر الفوج.",
     createdAt: hoursAgo(9),
     read: false,
-    href: "/events",
+    href: "/events/ev-4",
   },
   {
     id: "n3",
@@ -35,7 +35,7 @@ const seedNotifications: AppNotification[] = [
     body: "التسجيل متاح حتى نهاية الأسبوع، والأماكن محدودة. راجع تفاصيل الرحلة في صفحة الفعاليات.",
     createdAt: hoursAgo(28),
     read: false,
-    href: "/events",
+    href: "/events/ev-5",
   },
   {
     id: "n4",

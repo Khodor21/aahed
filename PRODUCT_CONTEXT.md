@@ -200,6 +200,26 @@ Do not prioritize desktop or large-screen layouts at this stage. When designing 
 
 Desktop responsiveness can be considered later when the project scope expands.
 
+### Data & API Readiness
+
+**All dynamic data now is static, but we need to prepare it to fetch it from the APIs, so build all you need based on this rule.**
+
+Every piece of dynamic data — events, monthly plans, evaluations, notifications, the student profile — follows the same path, so that swapping the mock for a real backend touches one layer only:
+
+1. **Types** live in `lib/types/*.ts` and are shared by the store, the API and the UI. Dates and times are always ISO strings, so the data survives JSON unchanged.
+2. **The data source** lives in `lib/server/*Store.ts` — an in-memory stand-in for the real database. Every function is `async` and returns a promise, exactly as a real API or DB call would. Only Server Components and Route Handlers import these files; never a `"use client"` file.
+3. **The API** lives in `app/api/**/route.ts` as real Route Handlers over the store: request validation, Arabic error messages, and honest status codes (400 for bad input, 404 for missing records). Reads get a `GET`, writes get a `PATCH` or `POST`.
+4. **The client data-access layer** lives next to each page as `api.ts` and talks to those Route Handlers through `lib/apiClient.ts`. `"use client"` components import only this layer — never the store, never a raw `fetch`.
+
+Rules that keep the eventual swap cheap:
+
+* Route paths follow the resource, not the screen. A resource shared by everyone lives at the top level (`/api/events`, `/api/events/[id]`); data that belongs to one student hangs off that student (`/api/students/[id]/current-month`). Where a shared resource carries a per-student part — the student's attendance answer on an event — that part stays on the shared resource (`PATCH /api/events/[id]/attendance`) and the student is identified by the session, passed explicitly only until real auth exists.
+* Never inline mock data inside a component. Read it through the store (Server Components) or through the page's `api.ts` (client components).
+* Shape every function signature like the future API call — arguments, return type and error behaviour — not like the convenient mock. Replacing the body should change nothing for callers.
+* Never assume data is available synchronously. Model pending and failure states; a failed mutation must roll the UI back instead of lying about success.
+* Route Handlers are the contract. When the real backend arrives, only `lib/server/*Store.ts` changes — or, if the API becomes external, only `API_BASE_URL` in `lib/apiClient.ts`.
+* Compute relative/localized labels ("اليوم"، "بعد يومين") on the server from a single `now` and pass them down, so a later switch to remote data can't cause hydration drift.
+
 ---
 
 ## 6. How to Assist With This Project

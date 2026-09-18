@@ -87,6 +87,21 @@ function buildStudyOnlyPlan(totalPages: number, daysInMonth: number): DayPlan[] 
   });
 }
 
+/**
+ * New pages the plan expects to be finished by the end of `throughDay` — the
+ * "where should I be today?" number that progress is measured against.
+ */
+export function calculateExpectedPages(
+  plan: DayPlan[],
+  throughDay: number
+): number {
+  return plan.reduce(
+    (sum, day) =>
+      day.type === "new" && day.day <= throughDay ? sum + day.pages : sum,
+    0
+  );
+}
+
 /** Only new pages count towards the monthly target — review days repeat covered pages. */
 export function calculateCompletedPages(
   plan: DayPlan[],

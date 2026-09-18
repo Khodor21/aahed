@@ -1,4 +1,5 @@
-import type { MonthlyReviewSummary } from "@/lib/types/student";
+import { apiRequest } from "@/lib/apiClient";
+import type { MonthlyReviewSummary, Student } from "@/lib/types/student";
 
 /**
  * Client-side data-access layer — calls the real Route Handlers under
@@ -6,27 +7,29 @@ import type { MonthlyReviewSummary } from "@/lib/types/student";
  * Server Components should read from lib/server/studentStore.ts directly.
  */
 
+export async function fetchStudent(studentId: string): Promise<Student> {
+  return apiRequest<Student>(`/api/students/${studentId}`, {
+    errorMessage: "فشل تحميل بيانات الطالب",
+  });
+}
+
 export async function updateMonthlyGoal(
   studentId: string,
   selectedJuz: number[]
 ): Promise<MonthlyReviewSummary> {
-  const response = await fetch(`/api/students/${studentId}/current-month`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ selectedJuz }),
-  });
-
-  if (!response.ok) {
-    throw new Error("فشل تحديث هدف الشهر");
-  }
-
-  return response.json();
+  return apiRequest<MonthlyReviewSummary>(
+    `/api/students/${studentId}/current-month`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ selectedJuz }),
+      errorMessage: "فشل تحديث هدف الشهر",
+    }
+  );
 }
 
 export async function logout(): Promise<void> {
-  const response = await fetch("/api/auth/logout", { method: "POST" });
-
-  if (!response.ok) {
-    throw new Error("فشل تسجيل الخروج");
-  }
+  await apiRequest<{ success: boolean }>("/api/auth/logout", {
+    method: "POST",
+    errorMessage: "فشل تسجيل الخروج",
+  });
 }
